@@ -63,3 +63,7 @@ class chatbot():
         memoria = open(self.nome+'.json','w')
         json.dump([self.conhecidos, self.frases],memoria)
         memoria.close()
+        
+    def fala(self,frase):
+        print(frase)
+        self.historico.append(frase)
