@@ -1,6 +1,6 @@
-from Chatbot import Chatbot
+from chatbot import chatbot
 
-Bot = Chatbot('Lucy')
+Bot = chatbot('Lucy')
 while True:
     frase = Bot.escuta()
     resp = Bot.pensa(frase)

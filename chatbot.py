@@ -45,6 +45,7 @@ class chatbot():
         except:
             pass
         return 'Não entendi'
+
             
     def pegaNome(self,nome):
         nome = nome.title()
