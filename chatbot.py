@@ -1,4 +1,4 @@
-import json
+﻿import json
 
 class chatbot():
     def __init__(self, nome):
@@ -44,7 +44,7 @@ class chatbot():
             return resp
         except:
             pass
-        return 'Não entendi'
+        return 'Eu sou a secretária Lucy, posso marcar uma consulta pra você.'
 
             
     def pegaNome(self,nome):
