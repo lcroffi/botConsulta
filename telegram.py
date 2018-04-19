@@ -1,6 +1,6 @@
 import telepot
 from telepot.loop import MessageLoop
-from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 from chatbot import chatbot
 
 telegram = telepot.Bot('570291084:AAEHYbsvh-EFVVMuzu4YwxUMFEwEoudSAW4')
@@ -26,18 +26,18 @@ def recebendoMsg(msg):
     tipoMsg, tipoChat, chatID = telepot.glance(msg)
     if 'consulta' in frase:
             button_list = [
-                    KeyboardButton(text="Cardiologista", callback_data='cardio'),
-                    KeyboardButton(text="Clínico Geral", callback_data='clinic'),
-                    KeyboardButton(text="Dermatologista", callback_data='dermo'),
-                    KeyboardButton(text="Endocrinologista", callback_data='endoc'),
-                    KeyboardButton(text="Gastroenterologista", callback_data='pneumo'),
-                    KeyboardButton(text="Ginecologista", callback_data='gineco'),
-                    KeyboardButton(text="Oftalmologista", callback_data='oftalmo'),
-                    KeyboardButton(text="Pneumologista", callback_data='pneumo'),
-                    KeyboardButton(text="Urologista", callback_data='uro')
+                    InlineKeyboardButton(text="Cardiologista", callback_data='cardio'),
+                    InlineKeyboardButton(text="Clínico Geral", callback_data='clinic'),
+                    InlineKeyboardButton(text="Dermatologista", callback_data='dermo'),
+                    InlineKeyboardButton(text="Endocrinologista", callback_data='endoc'),
+                    InlineKeyboardButton(text="Gastroenterologista", callback_data='pneumo'),
+                    InlineKeyboardButton(text="Ginecologista", callback_data='gineco'),
+                    InlineKeyboardButton(text="Oftalmologista", callback_data='oftalmo'),
+                    InlineKeyboardButton(text="Pneumologista", callback_data='pneumo'),
+                    InlineKeyboardButton(text="Outro", callback_data='outro')
             ]
-            reply_markup = ReplyKeyboardMarkup(keyboard=build_menu(button_list, n_cols=3), one_time_keyboard=True)
-            medico = telegram.sendMessage(chatID, 'Qual médico você está procurando?', reply_markup=reply_markup)
+            reply_markup = InlineKeyboardMarkup(inline_keyboard=build_menu(button_list, n_cols=2))
+            medico = telegram.sendMessage(chatID, 'Temos as seguintes especialidades disponíveis:', reply_markup=reply_markup)
             
     else:
         telegram.sendMessage(chatID,resp)
@@ -45,8 +45,10 @@ def recebendoMsg(msg):
 def on_callback_query(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     print('Callback Query:', query_id, from_id, query_data)
-
-    telegram.answerCallbackQuery(query_id, text='Got it')
+    
+    resp = bot.pensa(query_data)
+    bot.fala(resp)
+    telegram.answerCallbackQuery(query_id, text='Certo.')
 
 MessageLoop(telegram, {'chat': recebendoMsg,
                   'callback_query': on_callback_query}).run_as_thread()

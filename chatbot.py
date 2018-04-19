@@ -6,11 +6,11 @@ class chatbot():
             memoria = open(nome+'.json','r')
         except FileNotFoundError:
             memoria = open(nome+'.json','w')
-            memoria.write('[["Larissa","Letícia", "Jéssica"], {"oi": "Olá, com quem estou falando?","tchau":"tchau", "sair":"Até logo", "/start":"Bom dia, eu sou a secretária Lucy. No que posso ajudá-lo?"}]')
+            memoria.write('[["Larissa","Letícia", "Jéssica"], {"oi": "Olá, com quem estou falando?","tchau":"Tchau!", "sair":"Até logo!"}, ["Médicos"]]')
             memoria.close()
             memoria = open(nome+'.json','r')
         self.nome = nome
-        self.conhecidos, self.frases = json.load(memoria)
+        self.conhecidos, self.frases, self.medicos = json.load(memoria)
         memoria.close()
         self.historico = [None, ]
 
@@ -24,6 +24,12 @@ class chatbot():
             return self.frases[frase]
         if frase == 'aprende':
             return 'Digite a frase: '
+        if frase == 'cardiologista' or frase == 'clínico geral' or frase == 'dermatologista' or frase == 'endocrinologista' or frase == 'gastroenterologista' or frase == 'ginecologista' or frase == 'oftalmologista' or frase == 'pneumologista':
+            return 'Temos um horário às 16h com a Dra. Cláudia, pode ser?'
+        if frase == 'outro':
+            return 'Qual seria a especialidade que está procurando?'
+        if frase == "/start":
+            return 'Bom dia, eu sou a secretária Lucy. No que posso ajudá-lo?'
             
         #Responde frases que dependem do histórico
         ultimaFrase = self.historico[-1]
@@ -39,12 +45,18 @@ class chatbot():
             self.frases[self.chave] = resp
             self.gravaMemoria()
             return 'Aprendido'
+        if ultimaFrase == 'Qual seria a especialidade que está procurando?':
+            medico = frase
+            self.medicos.append(medico)
+            self.gravaMemoria() 
+            return 'Anotado, vamos procurar essa especialidade.'
+            
         try:
             resp = str(eval(frase))
             return resp
         except:
             pass
-        return 'Eu sou a secretária Lucy, posso marcar uma consulta pra você.'
+        return 'Posso marcar uma consulta pra você.'
 
             
     def pegaNome(self,nome):
@@ -62,7 +74,7 @@ class chatbot():
     
     def gravaMemoria(self):
         memoria = open(self.nome+'.json','w')
-        json.dump([self.conhecidos, self.frases],memoria)
+        json.dump([self.conhecidos, self.frases, self.medicos],memoria)
         memoria.close()
         
     def fala(self,frase):
