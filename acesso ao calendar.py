@@ -1,61 +1,64 @@
 from __future__ import print_function
-import httplib2
-import os
-
-from apiclient import discovery
-from oauth2client import client
-from oauth2client import tools
-from oauth2client.file import Storage
-
+from apiclient.discovery import build
+from httplib2 import Http
+from oauth2client import file, client, tools
 import datetime
 
-try:
-    import argparse
-    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-except ImportError:
-    flags = None
+SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
+store = file.Storage('credentials.json')
+creds = store.get()
 
-scopes = 'http://www.googleapi.com/auth/calender.readonly'
-client_secret_file = 'calender.json'
-aplicativo = 'Google Calendar API Python Quickstart'
+if not creds or creds.invalid:
+    flow = client.flow_from_clientsecrets('calendar.json', SCOPES)
+    creds = tools.run_flow(flow, store)
+service = build('calendar', 'v3', http=creds.authorize(Http()))
 
-def get_credencial():
-    home_dir = os.path.expanduser('~')
-    credencial_dir = os.path.join(home_dir, '.credentials')
-    if not os.path.exists(credencial_dir):
-        os.makedirs(credencial_dir)
-    credencial_path = os.path.join(credencial_dir, 'calendar-python-quickstart.json')
-
-
-    store = Storage(credencial_path)
-    credencial = store.get()
-    if not credencial or credencial.invalid:
-        flow = client.flow_from_clientsecrets(client_secret_file, scopes)
-        flow.user_agent = aplicativo
-        if flags:
-            credencial = tools.run_flow(flow, store, flags)
-        else:
-            credencial = tools.run(flow, store)
-        print('Armazenando credencial para: ' + credencial_path)
-    return credencial
-
-
-def main():
-    credencial = get_credencial()
-    http = credencial.authorize(httplib2.Http())
-    servico = discovery.build('calendar', 'v3', http=http)
-
-    now = datetime.datetime.utcnow().isoformat() + 'Z'
-    print('obtendo os proximos eventos')
-    resultado = service.events().list(calendarId = 'primary', timeMin = now, maxResultao=10, singleEvents=True,
+now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+print('Getting the upcoming 10 events')
+events_result = service.events().list(calendarId='primary', timeMin=now,
+                                      maxResults=10, singleEvents=True,
                                       orderBy='startTime').execute()
-    evento = resultado.get('items', [])
+events = events_result.get('items', [])
 
-    if not evento:
-        print('não há eventos')
-    for k in evento:
-        start = k['start'].get('dateTime', k['start'].get('date'))
-        print(start, k['summary'])
+if not events:
+    print('No upcoming events found.')
+for event in events:
+    start = event['start'].get('dateTime', event['start'].get('date'))
+    print(start, event['summary'])
 
-if __name__ == '__main__':
-    main()
+
+# Refer to the Python quickstart on how to setup the environment:
+# https://developers.google.com/calendar/quickstart/python
+# Change the scope to 'https://www.googleapis.com/auth/calendar' and delete any
+# stored credentials.
+
+event = {
+  'summary': 'Google I/O 2018',
+  'location': '800 Howard St., San Francisco, CA 94103',
+  'description': 'A chance to hear more about Google\'s developer products.',
+  'start': {
+    'dateTime': '2018-05-28T09:00:00-07:00',
+    'timeZone': 'America/Los_Angeles',
+  },
+  'end': {
+    'dateTime': '2018-05-28T17:00:00-07:00',
+    'timeZone': 'America/Los_Angeles',
+  },
+  'recurrence': [
+    'RRULE:FREQ=DAILY;COUNT=2'
+  ],
+  'attendees': [
+    {'email': 'lpage@example.com'},
+    {'email': 'sbrin@example.com'},
+  ],
+  'reminders': {
+    'useDefault': False,
+    'overrides': [
+      {'method': 'email', 'minutes': 24 * 60},
+      {'method': 'popup', 'minutes': 10},
+    ],
+  },
+}
+
+event = service.events().insert(calendarId='H9ZGKE3A7ycpPEdEBmqcA7jC', body=event).execute()
+print ('Event created: %s' % (event.get('https://calendar.google.com/calendar/r/agenda?pli=1')))
