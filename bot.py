@@ -16,6 +16,69 @@ def memoriaBot():
     conhecidos, frases, medicos = json.load(memoria)
     memoria.close()
     historico = [None, ]
+    return conhecidos, frases, medicos, historico
+
+####### Rodar o bot no Telegram
+
+def build_menu(buttons,
+               n_cols,
+               header_buttons=None,
+               footer_buttons=None):
+    menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
+    if header_buttons:
+        menu.insert(0, header_buttons)
+    if footer_buttons:
+        menu.append(footer_buttons)
+    return menu
+
+def recebendoMsg(msg):
+    frase = escuta(frase=msg['text'])
+    resp = pensa(frase)
+    fala(resp)
+    #chatID = msg['chat']['id']
+    tipoMsg, tipoChat, chatID = telepot.glance(msg)
+    if msg == "/start":
+        resp = 'Bom dia, eu sou a secretária Lucy. No que posso ajudá-lo?' 
+    if 'consulta' in frase:
+        inline_keyboard = [
+                    InlineKeyboardButton(text="Cardiologista", callback_data='cardio'),
+                    InlineKeyboardButton(text="Clínico Geral", callback_data='clinic'),
+                    InlineKeyboardButton(text="Dermatologista", callback_data='dermo'),
+                    InlineKeyboardButton(text="Endocrinologista", callback_data='endoc'),
+                    InlineKeyboardButton(text="Gastroenterologista", callback_data='pneumo'),
+                    InlineKeyboardButton(text="Ginecologista", callback_data='gineco'),
+                    InlineKeyboardButton(text="Oftalmologista", callback_data='oftalmo'),
+                    InlineKeyboardButton(text="Pneumologista", callback_data='pneumo'),
+                    InlineKeyboardButton(text="Outro", callback_data='outro')
+            ]
+        bot.sendMessage(
+            chatID,
+            'Temos as seguintes especialidades disponíveis:',
+            reply_markup = InlineKeyboardMarkup(inline_keyboard=build_menu(inline_keyboard, n_cols=2))
+            )
+    if msg == "cardio":
+        bot.sendMessage(
+                        chatID,
+                        'Cardiologistas:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Dr. Expedito Leitão", callback_data='exp')],
+                                [InlineKeyboardButton(text="Dr. Sebastião Faria", callback_data='seb')]
+                            ]
+                        )
+                    )
+'''            
+    else:
+        bot.sendMessage(chatID,resp)'''
+
+def on_callback_query(msg):
+    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
+    chatID = from_id
+    msg = query_data
+    print(chatID)
+    bot.answerCallbackQuery(query_id, text="Só um instante")
+    print("callback query", query_id, from_id, query_data)
+    recebendoMsg
 
 ####### Ações de interação do bot para deixá-lo mais humano
 
@@ -34,9 +97,7 @@ def pensa(frase):
         return 'Temos um horário às 16h com a Dra. Cláudia, pode ser?'
     if frase == 'outro':
         return 'Qual seria a especialidade que está procurando?'
-    if frase == "/start":
-        return 'Bom dia, eu sou a secretária Lucy. No que posso ajudá-lo?'
-            
+   
     #Responde frases que dependem do histórico
     ultimaFrase = historico[-1]
     if ultimaFrase == 'Olá, com quem estou falando?':
@@ -87,56 +148,13 @@ def fala(frase):
     print(frase)
     historico.append(frase)
 
+####### Main
 
-####### Rodar o bot no Telegram
-
-def build_menu(buttons,
-               n_cols,
-               header_buttons=None,
-               footer_buttons=None):
-    menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
-    if header_buttons:
-        menu.insert(0, header_buttons)
-    if footer_buttons:
-        menu.append(footer_buttons)
-    return menu
-
-def recebendoMsg(msg):
-    frase = escuta(frase=msg['text'])
-    resp = pensa(frase)
-    fala(resp)
-    #chatID = msg['chat']['id']
-    tipoMsg, tipoChat, chatID = telepot.glance(msg)
-    if 'consulta' in frase:
-            inline_keyboard = [
-                    InlineKeyboardButton(text="Cardiologista", callback_data='cardio'),
-                    InlineKeyboardButton(text="Clínico Geral", callback_data='clinic'),
-                    InlineKeyboardButton(text="Dermatologista", callback_data='dermo'),
-                    InlineKeyboardButton(text="Endocrinologista", callback_data='endoc'),
-                    InlineKeyboardButton(text="Gastroenterologista", callback_data='pneumo'),
-                    InlineKeyboardButton(text="Ginecologista", callback_data='gineco'),
-                    InlineKeyboardButton(text="Oftalmologista", callback_data='oftalmo'),
-                    InlineKeyboardButton(text="Pneumologista", callback_data='pneumo'),
-                    InlineKeyboardButton(text="Outro", callback_data='outro')
-            ]
-            reply_markup = InlineKeyboardMarkup(inline_keyboard=build_menu(button_list, n_cols=2))
-            medico = bot.sendMessage(chatID, 'Temos as seguintes especialidades disponíveis:', reply_markup=reply_markup)
-            
-    else:
-        bot.sendMessage(chatID,resp)
-
-def on_callback_query(msg):
-    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
-    chatID = from_id
-    medico = query_data
-    print(chatID)
-    bot.answerCallbackQuery(query_id, text="Só um instante")
-    print("callback query", query_id, from_id, query_data)
-
-memoriaBot()
+conhecidos, frases, medicos, historico = memoriaBot()
 load = open("token.json")
 token = json.loads(load.read())
-bot = telepot.Bot(token)
+bot = telepot.Bot(token[0])
+
 bot.message_loop({'chat': recebendoMsg,
                   'callback_query': on_callback_query,})
 
