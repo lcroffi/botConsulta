@@ -38,8 +38,8 @@ def recebendoMsg(msg):
     #chatID = msg['chat']['id']
     tipoMsg, tipoChat, chatID = telepot.glance(msg)
     if msg == "/start":
-        resp = 'Bom dia, eu sou a secretária Lucy. No que posso ajudá-lo?' 
-    if 'consulta' in frase:
+        resp = 'Bom dia, eu sou a secretária Lucy. No que posso ajudá-lo?'
+    elif 'consulta' in frase:
         inline_keyboard = [
                     InlineKeyboardButton(text="Cardiologista", callback_data='cardio'),
                     InlineKeyboardButton(text="Clínico Geral", callback_data='clinic'),
@@ -56,7 +56,20 @@ def recebendoMsg(msg):
             'Temos as seguintes especialidades disponíveis:',
             reply_markup = InlineKeyboardMarkup(inline_keyboard=build_menu(inline_keyboard, n_cols=2))
             )
-    if msg == "cardio":
+    else:
+        bot.sendMessage(chatID,resp)
+
+def on_callback_query(msg):
+    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
+    chatID = from_id
+    option = query_data
+    print(chatID)
+    bot.answerCallbackQuery(query_id, text="Só um instante")
+    print("callback query", query_id, from_id, query_data)
+    resposta(chatID, option)
+
+def resposta(chatID, option):
+    if option == "cardio":
         bot.sendMessage(
                         chatID,
                         'Cardiologistas:',
@@ -67,18 +80,88 @@ def recebendoMsg(msg):
                             ]
                         )
                     )
-'''            
-    else:
-        bot.sendMessage(chatID,resp)'''
-
-def on_callback_query(msg):
-    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
-    chatID = from_id
-    msg = query_data
-    print(chatID)
-    bot.answerCallbackQuery(query_id, text="Só um instante")
-    print("callback query", query_id, from_id, query_data)
-    recebendoMsg
+    elif option == "clinic":
+        bot.sendMessage(
+                        chatID,
+                        'Clínico Geral:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Dra. Rosa Castro", callback_data='exp')],
+                                [InlineKeyboardButton(text="Dr. Luís Gabriel", callback_data='seb')]
+                            ]
+                        )
+                    )
+    elif option == "dermo":
+        bot.sendMessage(
+                        chatID,
+                        'Dermatologista:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Dra. Maria do Rosário Reis", callback_data='exp')],
+                                [InlineKeyboardButton(text="Dr. Renato Gomes", callback_data='seb')]
+                            ]
+                        )
+                    )
+    elif option == "endoc":
+        bot.sendMessage(
+                        chatID,
+                        'Dermatologista:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Dra. Edwiges Mota", callback_data='exp')],
+                                [InlineKeyboardButton(text="Dr. Reinaldo Godoi", callback_data='seb')]
+                            ]
+                        )
+                    )
+    elif option == "pneumo":
+        bot.sendMessage(
+                        chatID,
+                        'Gastroenterologista:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Dra. Laura Silva", callback_data='exp')],
+                                [InlineKeyboardButton(text="Dra. Amanda Saldanha", callback_data='seb')]
+                            ]
+                        )
+                    )
+    elif option == "gineco":
+        bot.sendMessage(
+                        chatID,
+                        'Ginecologista:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Dra. Solange Maciel", callback_data='exp')],
+                                [InlineKeyboardButton(text="Dr. Armando Oliveira", callback_data='seb')]
+                            ]
+                        )
+                    )
+    elif option == "oftalmo":
+        bot.sendMessage(
+                        chatID,
+                        'Oftalmologista:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Dra. Maíra Fernandes", callback_data='exp')],
+                                [InlineKeyboardButton(text="Dra. Nicole Almeida", callback_data='seb')]
+                            ]
+                        )
+                    )
+    elif option == "pneumo":
+        bot.sendMessage(
+                        chatID,
+                        'Pneumologista:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Dr. Nilton Dias", callback_data='exp')],
+                                [InlineKeyboardButton(text="Dr. Maurício Correa", callback_data='seb')]
+                            ]
+                        )
+                    )
+    elif option == "outro":
+        frase = 'Qual seria a especialidade que está procurando?'
+        fala(frase)
+        bot.sendMessage(chatID,frase)
+        
 
 ####### Ações de interação do bot para deixá-lo mais humano
 
@@ -93,10 +176,6 @@ def pensa(frase):
         return frases[frase]
     if frase == 'aprende':
             return 'Digite a frase: '
-    if frase == 'cardiologista' or frase == 'clínico geral' or frase == 'dermatologista' or frase == 'endocrinologista' or frase == 'gastroenterologista' or frase == 'ginecologista' or frase == 'oftalmologista' or frase == 'pneumologista':
-        return 'Temos um horário às 16h com a Dra. Cláudia, pode ser?'
-    if frase == 'outro':
-        return 'Qual seria a especialidade que está procurando?'
    
     #Responde frases que dependem do histórico
     ultimaFrase = historico[-1]
@@ -116,7 +195,7 @@ def pensa(frase):
         medico = frase
         medicos.append(medico)
         gravaMemoria() 
-        return 'Anotado, vamos procurar essa especialidade.'
+        return 'Anotado, vamos procurar essa especialidade para você.'
             
     try:
         resp = str(eval(frase))
