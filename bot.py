@@ -1,3 +1,68 @@
+#### Google api agenda ####
+# pip install --upgrade google-api-python-client
+# pip install --upgrade oauth2client
+from __future__ import print_function
+from apiclient.discovery import build
+from httplib2 import Http
+from oauth2client import file, client, tools
+import datetime
+
+# lê os eventos
+SCOPES = 'https://www.googleapis.com/auth/calendar'
+store = file.Storage('credentials.json')
+creds = store.get()
+
+if not creds or creds.invalid:
+    flow = client.flow_from_clientsecrets('calendario_lucy.json', SCOPES)
+    creds = tools.run_flow(flow, store)
+service = build('calendar', 'v3', http=creds.authorize(Http()))
+
+now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+print('Getting the upcoming 10 events')
+events_result = service.events().list(calendarId='primary', timeMin=now,
+                                      maxResults=10, singleEvents=True,
+                                      orderBy='startTime').execute()
+events = events_result.get('items', [])
+
+if not events:
+    print('No upcoming events found.')
+for event in events:
+    start = event['start'].get('dateTime', event['start'].get('date'))
+    print(start, event['summary'])
+    
+
+
+# cria os eventos
+
+def agendar():
+    event = {
+      'summary': 'Maria', #nome do paciente
+      'location': 'Av. Perseu, 157 - Jardim Satélite',
+      'description': 'Endocrinologista' #especialidade,
+      'start': {
+        'dateTime': '2018-05-28T09:00:00-03:00', #início
+        'timeZone': 'America/Sao_Paulo',
+      },
+      'end': {
+        'dateTime': '2018-05-28T17:00:00-03:00', #fim
+        'timeZone': 'America/Sao_Paulo',
+      },
+      'reminders': {
+        'useDefault': False,
+        'overrides': [
+          {'method': 'popup', 'minutes': 10},
+        ],
+      },
+    }
+
+    event = service.events().insert(calendarId='primary', body=event).execute()
+    print ('Event created: %s' % (event.get('htmlLink')))
+
+
+
+
+#### BOT ####
+# pip install telepot
 import telepot
 import json
 from telepot.namedtuple import ForceReply, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
@@ -39,6 +104,10 @@ def recebendoMsg(msg):
     tipoMsg, tipoChat, chatID = telepot.glance(msg)
     if msg == "/start":
         resp = 'Bom dia, eu sou a secretária Lucy. No que posso ajudá-lo?'
+        bot.sendMessage(chatID,resp)
+    elif 'endereço' or 'local' in frase:
+        resp = 'Av. Perseu, 157 - Jardim Satélite'
+        bot.sendMessage(chatID,resp)
     elif 'consulta' in frase:
         inline_keyboard = [
                     InlineKeyboardButton(text="Cardiologista", callback_data='cardio'),
@@ -75,8 +144,8 @@ def resposta(chatID, option):
                         'Cardiologistas:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dr. Expedito Leitão", callback_data='exp')],
-                                [InlineKeyboardButton(text="Dr. Sebastião Faria", callback_data='seb')]
+                                [InlineKeyboardButton(text="Dr. Expedito Leitão", callback_data='eleitao')],
+                                [InlineKeyboardButton(text="Dr. Sebastião Faria", callback_data='sfaria')]
                             ]
                         )
                     )
@@ -86,8 +155,8 @@ def resposta(chatID, option):
                         'Clínico Geral:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Rosa Castro", callback_data='exp')],
-                                [InlineKeyboardButton(text="Dr. Luís Gabriel", callback_data='seb')]
+                                [InlineKeyboardButton(text="Dra. Rosa Castro", callback_data='rcastro')],
+                                [InlineKeyboardButton(text="Dr. Luís Gabriel", callback_data='lgabri')]
                             ]
                         )
                     )
@@ -97,8 +166,8 @@ def resposta(chatID, option):
                         'Dermatologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Maria do Rosário Reis", callback_data='exp')],
-                                [InlineKeyboardButton(text="Dr. Renato Gomes", callback_data='seb')]
+                                [InlineKeyboardButton(text="Dra. Maria do Rosário Reis", callback_data='mreis')],
+                                [InlineKeyboardButton(text="Dr. Renato Gomes", callback_data='rgomes')]
                             ]
                         )
                     )
@@ -108,8 +177,8 @@ def resposta(chatID, option):
                         'Dermatologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Edwiges Mota", callback_data='exp')],
-                                [InlineKeyboardButton(text="Dr. Reinaldo Godoi", callback_data='seb')]
+                                [InlineKeyboardButton(text="Dra. Edwiges Mota", callback_data='emota')],
+                                [InlineKeyboardButton(text="Dr. Reinaldo Godoi", callback_data='rgodoi')]
                             ]
                         )
                     )
@@ -119,8 +188,8 @@ def resposta(chatID, option):
                         'Gastroenterologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Laura Silva", callback_data='exp')],
-                                [InlineKeyboardButton(text="Dra. Amanda Saldanha", callback_data='seb')]
+                                [InlineKeyboardButton(text="Dra. Laura Silva", callback_data='lsilva')],
+                                [InlineKeyboardButton(text="Dra. Amanda Saldanha", callback_data='asal')]
                             ]
                         )
                     )
@@ -130,8 +199,8 @@ def resposta(chatID, option):
                         'Ginecologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Solange Maciel", callback_data='exp')],
-                                [InlineKeyboardButton(text="Dr. Armando Oliveira", callback_data='seb')]
+                                [InlineKeyboardButton(text="Dra. Solange Maciel", callback_data='smac')],
+                                [InlineKeyboardButton(text="Dr. Armando Oliveira", callback_data='aoliv')]
                             ]
                         )
                     )
@@ -141,8 +210,8 @@ def resposta(chatID, option):
                         'Oftalmologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Maíra Fernandes", callback_data='exp')],
-                                [InlineKeyboardButton(text="Dra. Nicole Almeida", callback_data='seb')]
+                                [InlineKeyboardButton(text="Dra. Maíra Fernandes", callback_data='mfer')],
+                                [InlineKeyboardButton(text="Dra. Nicole Almeida", callback_data='nalm')]
                             ]
                         )
                     )
@@ -152,11 +221,26 @@ def resposta(chatID, option):
                         'Pneumologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dr. Nilton Dias", callback_data='exp')],
-                                [InlineKeyboardButton(text="Dr. Maurício Correa", callback_data='seb')]
+                                [InlineKeyboardButton(text="Dr. Nilton Dias", callback_data='ndias')],
+                                [InlineKeyboardButton(text="Dr. Maurício Correa", callback_data='mcorrea')]
                             ]
                         )
                     )
+    elif option == "eleitao":
+        bot.sendMessage (
+                        chatID,
+                        'Dr. Expedito Leitão:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="10:00 - 10:30", callback_data='ndias')],
+                                [InlineKeyboardButton(text="10:30 - 11:00", callback_data='mcorrea')]
+                                [InlineKeyboardButton(text="11:00 - 11:30", callback_data='mcorrea')]
+                                [InlineKeyboardButton(text="14:30 - 15:00", callback_data='mcorrea')]
+                                [InlineKeyboardButton(text="15:00 - 15:30", callback_data='mcorrea')]
+                            ]
+                        )
+                    )
+                
     elif option == "outro":
         frase = 'Qual seria a especialidade que está procurando?'
         fala(frase)
