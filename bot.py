@@ -33,18 +33,19 @@ for event in events:
 
 
 # cria os eventos
+global especialidade
 
-def agendar():
+def agendar(nomePaciente):
     event = {
-      'summary': 'Maria', #nome do paciente
+      'summary': nomePaciente, #nome do paciente
       'location': 'Av. Perseu, 157 - Jardim Satélite',
-      'description': 'Endocrinologista' #especialidade,
+      'description': especialidade #especialidade,
       'start': {
-        'dateTime': '2018-05-28T09:00:00-03:00', #início
+        'dateTime': '2018-05-28T10:00:00-03:00', #início
         'timeZone': 'America/Sao_Paulo',
       },
       'end': {
-        'dateTime': '2018-05-28T17:00:00-03:00', #fim
+        'dateTime': '2018-05-28T10:30:00-03:00', #fim
         'timeZone': 'America/Sao_Paulo',
       },
       'reminders': {
@@ -66,7 +67,6 @@ def agendar():
 import telepot
 import json
 from telepot.namedtuple import ForceReply, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
-
 
 ####### Salvar e carregar memória do bot
 
@@ -139,112 +139,168 @@ def on_callback_query(msg):
 
 def resposta(chatID, option):
     if option == "cardio":
+        especialidade = 'Cardiologista'
         bot.sendMessage(
                         chatID,
-                        'Cardiologistas:',
+                        'Cardiologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dr. Expedito Leitão", callback_data='eleitao')],
-                                [InlineKeyboardButton(text="Dr. Sebastião Faria", callback_data='sfaria')]
+                                [InlineKeyboardButton(text="Dr. Expedito Leitão", callback_data='sqs')],
+                                [InlineKeyboardButton(text="Dr. Sebastião Faria", callback_data='tq')]
                             ]
                         )
                     )
     elif option == "clinic":
+        especialidade = 'Clínico Geral'
         bot.sendMessage(
                         chatID,
                         'Clínico Geral:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Rosa Castro", callback_data='rcastro')],
-                                [InlineKeyboardButton(text="Dr. Luís Gabriel", callback_data='lgabri')]
+                                [InlineKeyboardButton(text="Dra. Rosa Castro", callback_data='sqs')],
+                                [InlineKeyboardButton(text="Dr. Luís Gabriel", callback_data='tq')]
                             ]
                         )
                     )
     elif option == "dermo":
+        especialidade = 'Dermatologista'
         bot.sendMessage(
                         chatID,
                         'Dermatologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Maria do Rosário Reis", callback_data='mreis')],
-                                [InlineKeyboardButton(text="Dr. Renato Gomes", callback_data='rgomes')]
+                                [InlineKeyboardButton(text="Dra. Maria do Rosário Reis", callback_data='sqs')],
+                                [InlineKeyboardButton(text="Dr. Renato Gomes", callback_data='tq')]
                             ]
                         )
                     )
     elif option == "endoc":
+        especialidade = 'Endocrinologistas'
         bot.sendMessage(
                         chatID,
-                        'Dermatologista:',
+                        'Endocrinologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Edwiges Mota", callback_data='emota')],
-                                [InlineKeyboardButton(text="Dr. Reinaldo Godoi", callback_data='rgodoi')]
+                                [InlineKeyboardButton(text="Dra. Edwiges Mota", callback_data='sqs')],
+                                [InlineKeyboardButton(text="Dr. Reinaldo Godoi", callback_data='tq')]
                             ]
                         )
                     )
     elif option == "pneumo":
+        especialidade = 'Gastroenterologista'
         bot.sendMessage(
                         chatID,
                         'Gastroenterologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Laura Silva", callback_data='lsilva')],
-                                [InlineKeyboardButton(text="Dra. Amanda Saldanha", callback_data='asal')]
+                                [InlineKeyboardButton(text="Dra. Laura Silva", callback_data='sqs')],
+                                [InlineKeyboardButton(text="Dra. Amanda Saldanha", callback_data='tq')]
                             ]
                         )
                     )
     elif option == "gineco":
+        especialidade = 'Ginecologista'
         bot.sendMessage(
                         chatID,
                         'Ginecologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Solange Maciel", callback_data='smac')],
-                                [InlineKeyboardButton(text="Dr. Armando Oliveira", callback_data='aoliv')]
+                                [InlineKeyboardButton(text="Dra. Solange Maciel", callback_data='sqs')],
+                                [InlineKeyboardButton(text="Dr. Armando Oliveira", callback_data='tq')]
                             ]
                         )
                     )
     elif option == "oftalmo":
+        especialidade = 'Oftalmologista'
         bot.sendMessage(
                         chatID,
                         'Oftalmologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dra. Maíra Fernandes", callback_data='mfer')],
-                                [InlineKeyboardButton(text="Dra. Nicole Almeida", callback_data='nalm')]
+                                [InlineKeyboardButton(text="Dra. Maíra Fernandes", callback_data='sqs')],
+                                [InlineKeyboardButton(text="Dra. Nicole Almeida", callback_data='tq')]
                             ]
                         )
                     )
     elif option == "pneumo":
+        especialidade = 'Pneumologista'
         bot.sendMessage(
                         chatID,
                         'Pneumologista:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Dr. Nilton Dias", callback_data='ndias')],
-                                [InlineKeyboardButton(text="Dr. Maurício Correa", callback_data='mcorrea')]
+                                [InlineKeyboardButton(text="Dr. Nilton Dias", callback_data='sqs')],
+                                [InlineKeyboardButton(text="Dr. Maurício Correa", callback_data='tq')]
                             ]
                         )
                     )
-    elif option == "eleitao":
-        bot.sendMessage (
-                        chatID,
-                        'Dr. Expedito Leitão:',
-                        reply_markup=InlineKeyboardMarkup(
-                            inline_keyboard=[
-                                [InlineKeyboardButton(text="10:00 - 10:30", callback_data='ndias')],
-                                [InlineKeyboardButton(text="10:30 - 11:00", callback_data='mcorrea')]
-                                [InlineKeyboardButton(text="11:00 - 11:30", callback_data='mcorrea')]
-                                [InlineKeyboardButton(text="14:30 - 15:00", callback_data='mcorrea')]
-                                [InlineKeyboardButton(text="15:00 - 15:30", callback_data='mcorrea')]
-                            ]
-                        )
-                    )
-                
     elif option == "outro":
         frase = 'Qual seria a especialidade que está procurando?'
         fala(frase)
         bot.sendMessage(chatID,frase)
+        
+    elif option == "sqs":
+        bot.sendMessage (
+                    chatID,
+                    'Dias disponíveis:',
+                    reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Segunda-feira", callback_data='2a')],
+                                [InlineKeyboardButton(text="Quarta-feira", callback_data='4a')],
+                                [InlineKeyboardButton(text="Sexta-feira", callback_data='6a')],
+                                [InlineKeyboardButton(text="Outro médico", callback_data='denovo')]
+                            ]
+                        )
+                    )
+    elif option == "tq":
+        bot.sendMessage (
+                        chatID,
+                        'Dias disponíveis:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Terça-feira", callback_data='3a')],
+                                [InlineKeyboardButton(text="Quinta-feira", callback_data='5a')],
+                                [InlineKeyboardButton(text="Outro médico", callback_data='denovo')]
+                            ]
+                        )
+                    )
+    elif option == "denovo":
+        bot.sendMessage (
+                        chatID,
+                        'Temos as seguintes especialidades disponíveis:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="Cardiologista", callback_data='cardio')],
+                                [InlineKeyboardButton(text="Clínico Geral", callback_data='clinic')],
+                                [InlineKeyboardButton(text="Dermatologista", callback_data='dermo')],
+                                [InlineKeyboardButton(text="Endocrinologista", callback_data='endoc')],
+                                [InlineKeyboardButton(text="Gastroenterologista", callback_data='pneumo')],
+                                [InlineKeyboardButton(text="Ginecologista", callback_data='gineco')],
+                                [InlineKeyboardButton(text="Oftalmologista", callback_data='oftalmo')],
+                                [InlineKeyboardButton(text="Pneumologista", callback_data='pneumo')],
+                                [InlineKeyboardButton(text="Outro", callback_data='outro')]
+                            ]
+                        )
+                    )
+    elif option == "2a" or option == "3a" or option == "4a" or option == "5a" or option == "6a":
+        bot.sendMessage (
+                        chatID,
+                        'Horários disponíveis:',
+                        reply_markup=InlineKeyboardMarkup(
+                            inline_keyboard=[
+                                [InlineKeyboardButton(text="10:00 - 10:30", callback_data='hora1')],
+                                [InlineKeyboardButton(text="10:30 - 11:00", callback_data='hora2')],
+                                [InlineKeyboardButton(text="11:00 - 11:30", callback_data='hora3')],
+                                [InlineKeyboardButton(text="14:00 - 14:30", callback_data='hora4')],
+                                [InlineKeyboardButton(text="14:30 - 15:00", callback_data='hora5')]
+                            ]
+                        )
+                    )
+    elif option == "hora1" or option == "hora2" or option == "hora3" or option == "hora4" or option == "hora5":
+        frase = 'Digite o nome do paciente para agendar a consulta.'
+        fala(frase)
+        bot.sendMessage(chatID,frase)
+        
         
 
 ####### Ações de interação do bot para deixá-lo mais humano
@@ -280,6 +336,10 @@ def pensa(frase):
         medicos.append(medico)
         gravaMemoria() 
         return 'Anotado, vamos procurar essa especialidade para você.'
+    if ultimaFrase == 'Digite o nome do paciente para agendar a consulta.':
+        nomePaciente = frase
+        agendar(nomePaciente)
+        return 'Consulta agendada para ' + nomePaciente + ' com ' + especialidade
             
     try:
         resp = str(eval(frase))
