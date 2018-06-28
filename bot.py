@@ -9,6 +9,7 @@ from oauth2client import file, client, tools
 import datetime
 
 # lê os eventos
+
 SCOPES = 'https://www.googleapis.com/auth/calendar'
 store = file.Storage('credentials.json')
 creds = store.get()
@@ -34,6 +35,7 @@ for event in events:
 
 
 # cria os eventos
+    
 def agendar(nomePaciente):
     event = {
       'summary': nomePaciente, #nome do paciente
@@ -62,6 +64,7 @@ def agendar(nomePaciente):
 
 
 #### BOT ####
+    
 import telepot
 import json
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
@@ -73,7 +76,7 @@ def memoriaBot():
         memoria = open('Lucy.json','r')
     except FileNotFoundError:
         memoria = open('Lucy.json','w')
-        memoria.write('[["Larissa","Letícia", "Jéssica"], {"oi": "Olá, com quem estou falando?","tchau":"Tchau!", "sair":"Até logo!"}, ["Médicos"]]')
+        memoria.write('[["Larissa","Letícia", "Jéssica"], {"oi": "Olá, com quem estou falando?","tchau":"Tchau!", "sair":"Até logo!", "endereço":"Av. Perseu, 157 - Jardim Satélite", "local":"Av. Perseu, 157 - Jardim Satélite"}, ["Médicos"]]')
         memoria.close()
         memoria = open('Lucy.json','r')
     conhecidos, frases, medicos = json.load(memoria)
