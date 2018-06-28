@@ -34,7 +34,6 @@ for event in events:
 
 
 # cria os eventos
-
 def agendar(nomePaciente):
     event = {
       'summary': nomePaciente, #nome do paciente
@@ -63,7 +62,6 @@ def agendar(nomePaciente):
 
 
 #### BOT ####
-# pip install telepot
 import telepot
 import json
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
