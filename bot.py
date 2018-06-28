@@ -1,4 +1,5 @@
 #### Google api agenda ####
+# pip install telepot
 # pip install --upgrade google-api-python-client
 # pip install --upgrade oauth2client
 from __future__ import print_function
@@ -33,13 +34,12 @@ for event in events:
 
 
 # cria os eventos
-global especialidade
 
 def agendar(nomePaciente):
     event = {
       'summary': nomePaciente, #nome do paciente
       'location': 'Av. Perseu, 157 - Jardim Satélite',
-      'description': especialidade #especialidade,
+      'description': 'Cardiologista', #especialidade,
       'start': {
         'dateTime': '2018-05-28T10:00:00-03:00', #início
         'timeZone': 'America/Sao_Paulo',
@@ -66,7 +66,7 @@ def agendar(nomePaciente):
 # pip install telepot
 import telepot
 import json
-from telepot.namedtuple import ForceReply, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 
 ####### Salvar e carregar memória do bot
 
@@ -105,16 +105,13 @@ def recebendoMsg(msg):
     if msg == "/start":
         resp = 'Bom dia, eu sou a secretária Lucy. No que posso ajudá-lo?'
         bot.sendMessage(chatID,resp)
-    elif 'endereço' or 'local' in frase:
-        resp = 'Av. Perseu, 157 - Jardim Satélite'
-        bot.sendMessage(chatID,resp)
-    elif 'consulta' in frase:
+    if 'consulta' in frase:
         inline_keyboard = [
                     InlineKeyboardButton(text="Cardiologista", callback_data='cardio'),
                     InlineKeyboardButton(text="Clínico Geral", callback_data='clinic'),
                     InlineKeyboardButton(text="Dermatologista", callback_data='dermo'),
                     InlineKeyboardButton(text="Endocrinologista", callback_data='endoc'),
-                    InlineKeyboardButton(text="Gastroenterologista", callback_data='pneumo'),
+                    InlineKeyboardButton(text="Gastroenterologista", callback_data='gastro'),
                     InlineKeyboardButton(text="Ginecologista", callback_data='gineco'),
                     InlineKeyboardButton(text="Oftalmologista", callback_data='oftalmo'),
                     InlineKeyboardButton(text="Pneumologista", callback_data='pneumo'),
@@ -139,7 +136,6 @@ def on_callback_query(msg):
 
 def resposta(chatID, option):
     if option == "cardio":
-        especialidade = 'Cardiologista'
         bot.sendMessage(
                         chatID,
                         'Cardiologista:',
@@ -151,7 +147,6 @@ def resposta(chatID, option):
                         )
                     )
     elif option == "clinic":
-        especialidade = 'Clínico Geral'
         bot.sendMessage(
                         chatID,
                         'Clínico Geral:',
@@ -163,7 +158,6 @@ def resposta(chatID, option):
                         )
                     )
     elif option == "dermo":
-        especialidade = 'Dermatologista'
         bot.sendMessage(
                         chatID,
                         'Dermatologista:',
@@ -175,7 +169,6 @@ def resposta(chatID, option):
                         )
                     )
     elif option == "endoc":
-        especialidade = 'Endocrinologistas'
         bot.sendMessage(
                         chatID,
                         'Endocrinologista:',
@@ -186,8 +179,7 @@ def resposta(chatID, option):
                             ]
                         )
                     )
-    elif option == "pneumo":
-        especialidade = 'Gastroenterologista'
+    elif option == "gastro":
         bot.sendMessage(
                         chatID,
                         'Gastroenterologista:',
@@ -199,7 +191,6 @@ def resposta(chatID, option):
                         )
                     )
     elif option == "gineco":
-        especialidade = 'Ginecologista'
         bot.sendMessage(
                         chatID,
                         'Ginecologista:',
@@ -211,7 +202,6 @@ def resposta(chatID, option):
                         )
                     )
     elif option == "oftalmo":
-        especialidade = 'Oftalmologista'
         bot.sendMessage(
                         chatID,
                         'Oftalmologista:',
@@ -223,7 +213,6 @@ def resposta(chatID, option):
                         )
                     )
     elif option == "pneumo":
-        especialidade = 'Pneumologista'
         bot.sendMessage(
                         chatID,
                         'Pneumologista:',
@@ -274,7 +263,7 @@ def resposta(chatID, option):
                                 [InlineKeyboardButton(text="Clínico Geral", callback_data='clinic')],
                                 [InlineKeyboardButton(text="Dermatologista", callback_data='dermo')],
                                 [InlineKeyboardButton(text="Endocrinologista", callback_data='endoc')],
-                                [InlineKeyboardButton(text="Gastroenterologista", callback_data='pneumo')],
+                                [InlineKeyboardButton(text="Gastroenterologista", callback_data='gastro')],
                                 [InlineKeyboardButton(text="Ginecologista", callback_data='gineco')],
                                 [InlineKeyboardButton(text="Oftalmologista", callback_data='oftalmo')],
                                 [InlineKeyboardButton(text="Pneumologista", callback_data='pneumo')],
@@ -339,7 +328,7 @@ def pensa(frase):
     if ultimaFrase == 'Digite o nome do paciente para agendar a consulta.':
         nomePaciente = frase
         agendar(nomePaciente)
-        return 'Consulta agendada para ' + nomePaciente + ' com ' + especialidade
+        return 'Consulta agendada para ' + nomePaciente
             
     try:
         resp = str(eval(frase))
