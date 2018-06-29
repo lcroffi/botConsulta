@@ -42,11 +42,11 @@ def agendar(nomePaciente):
       'location': 'Av. Perseu, 157 - Jardim Satélite',
       'description': 'Cardiologista', #especialidade,
       'start': {
-        'dateTime': '2018-05-28T10:00:00-03:00', #início
+        'dateTime': '2018-06-29T10:00:00-03:00', #início
         'timeZone': 'America/Sao_Paulo',
       },
       'end': {
-        'dateTime': '2018-05-28T10:30:00-03:00', #fim
+        'dateTime': '2018-06-29T10:30:00-03:00', #fim
         'timeZone': 'America/Sao_Paulo',
       },
       'reminders': {
@@ -235,9 +235,9 @@ def resposta(chatID, option):
                     'Dias disponíveis:',
                     reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Segunda-feira", callback_data='2a')],
-                                [InlineKeyboardButton(text="Quarta-feira", callback_data='4a')],
-                                [InlineKeyboardButton(text="Sexta-feira", callback_data='6a')],
+                                [InlineKeyboardButton(text="Segunda-feira 02/07", callback_data='2a')],
+                                [InlineKeyboardButton(text="Quarta-feira 04/07", callback_data='4a')],
+                                [InlineKeyboardButton(text="Sexta-feira 06/07", callback_data='6a')],
                                 [InlineKeyboardButton(text="Outro médico", callback_data='denovo')]
                             ]
                         )
@@ -248,8 +248,8 @@ def resposta(chatID, option):
                         'Dias disponíveis:',
                         reply_markup=InlineKeyboardMarkup(
                             inline_keyboard=[
-                                [InlineKeyboardButton(text="Terça-feira", callback_data='3a')],
-                                [InlineKeyboardButton(text="Quinta-feira", callback_data='5a')],
+                                [InlineKeyboardButton(text="Terça-feira 03/07", callback_data='3a')],
+                                [InlineKeyboardButton(text="Quinta-feira 05/07", callback_data='5a')],
                                 [InlineKeyboardButton(text="Outro médico", callback_data='denovo')]
                             ]
                         )
@@ -300,7 +300,6 @@ def escuta(frase=None):
         frase = frase.lower()
         return frase
 
-
 def pensa(frase):
     if frase in frases:
         return frases[frase]
@@ -315,9 +314,11 @@ def pensa(frase):
         return frase
     if ultimaFrase == 'Digite a frase: ':
         chave = frase
+        historico.append(chave)
         return 'Digite a resposta: '
     if ultimaFrase == 'Digite a resposta: ':
         resp = frase
+        chave = historico[-2]
         frases[chave] = resp
         gravaMemoria()
         return 'Aprendido'
@@ -364,6 +365,7 @@ def fala(frase):
 ####### Main
 
 conhecidos, frases, medicos, historico = memoriaBot()
+
 load = open("token.json")
 token = json.loads(load.read())
 bot = telepot.Bot(token[0])
